@@ -116,7 +116,15 @@
       "status": "failed",
       "added_at": "2026-03-13T23:15:42.569325",
       "attempts": 1
+    },
+    {
+      "url": "https://github.com/leonflicts42/machine-learning-zoomcamp",
+      "user_id": 7891701566,
+      "status": "failed",
+      "added_at": "2026-03-13T23:21:52.959067",
+      "attempts": 1,
+      "done_at": "2026-03-13T23:22:14.548740"
     }
   ],
-  "updated_at": "2026-03-13T23:15:44.041847"
+  "updated_at": "2026-03-13T23:22:15.287335"
 }

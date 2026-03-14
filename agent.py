@@ -232,7 +232,7 @@ class PKMAgent:
 
     async def _extract_webpage(self, url: str) -> dict:
         # GitHub — extrai via API pública em vez de scraping
-        if "github.com" in url and "/blob/" in url:
+        if "github.com" in url:
             return await self._extract_github(url)
         headers = {
             "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/124.0 Safari/537.36",
@@ -251,43 +251,80 @@ class PKMAgent:
         return {"type": "article", "title": title[:200], "text": text[:MAX_CONTENT_CHARS], "url": url}
 
     async def _extract_github(self, url: str) -> dict:
-        """Converte URL do GitHub blob para raw e extrai o conteúdo."""
-        # https://github.com/user/repo/blob/main/file.md
-        # → https://raw.githubusercontent.com/user/repo/main/file.md
-        raw_url = url.replace("github.com", "raw.githubusercontent.com").replace("/blob/", "/")
-        
-        try:
-            async with httpx.AsyncClient(timeout=20, follow_redirects=True) as client:
-                resp = await client.get(raw_url)
-                resp.raise_for_status()
-                text = resp.text
-                title = url.split("/")[-1].replace("-", " ").replace(".md", "").title()
-                return {
-                    "type": "article",
-                    "title": title[:200],
-                    "text": text[:MAX_CONTENT_CHARS],
-                    "url": url,
-                }
-        except Exception:
-            # Fallback: tenta scraping normal da página
-            pass
+        """Extrai conteúdo de repositórios e arquivos do GitHub."""
 
-        # Scraping normal para outros tipos de página do GitHub
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-            "Accept-Language": "pt-BR,pt;q=0.9,en;q=0.8",
-        }
+        # Caso 1: arquivo específico (/blob/) → converte para raw
+        if "/blob/" in url:
+            raw_url = url.replace("github.com", "raw.githubusercontent.com").replace("/blob/", "/")
+            try:
+                async with httpx.AsyncClient(timeout=20, follow_redirects=True) as client:
+                    resp = await client.get(raw_url)
+                    resp.raise_for_status()
+                    title = url.split("/")[-1].replace("-", " ").replace(".md", "").title()
+                    return {"type": "article", "title": title[:200],
+                            "text": resp.text[:MAX_CONTENT_CHARS], "url": url}
+            except Exception as e:
+                logger.warning(f"GitHub raw falhou: {e}")
+
+        # Caso 2: página de repositório → usa API pública do GitHub (sem autenticação)
+        # Extrai user/repo da URL
+        match = re.search(r"github\.com/([^/]+)/([^/?\s]+)", url)
+        if match:
+            owner, repo = match.group(1), match.group(2)
+            try:
+                api_url = f"https://api.github.com/repos/{owner}/{repo}"
+                readme_url = f"https://api.github.com/repos/{owner}/{repo}/readme"
+                headers = {"Accept": "application/vnd.github.v3+json",
+                        "User-Agent": "PKMBot/1.0"}
+
+                async with httpx.AsyncClient(timeout=20) as client:
+                    # Busca metadados do repo e README em paralelo
+                    repo_resp, readme_resp = await asyncio.gather(
+                        client.get(api_url, headers=headers),
+                        client.get(readme_url, headers=headers),
+                        return_exceptions=True
+                    )
+
+                text_parts = []
+
+                # Metadados do repositório
+                if hasattr(repo_resp, "json"):
+                    data = repo_resp.json()
+                    text_parts.append(f"Repositório: {data.get('full_name', '')}")
+                    text_parts.append(f"Descrição: {data.get('description', 'Sem descrição')}")
+                    text_parts.append(f"Linguagem principal: {data.get('language', '?')}")
+                    text_parts.append(f"Stars: {data.get('stargazers_count', 0)}")
+                    text_parts.append(f"Topics: {', '.join(data.get('topics', []))}")
+                    title = data.get("name", repo).replace("-", " ").title()
+                else:
+                    title = repo.replace("-", " ").title()
+
+                # README
+                if hasattr(readme_resp, "json"):
+                    readme_data = readme_resp.json()
+                    import base64
+                    content = base64.b64decode(readme_data.get("content", "")).decode("utf-8", errors="ignore")
+                    text_parts.append(f"\n\nREADME:\n{content[:8000]}")
+
+                return {"type": "article", "title": title[:200],
+                        "text": "\n".join(text_parts)[:MAX_CONTENT_CHARS], "url": url}
+
+            except Exception as e:
+                logger.warning(f"GitHub API falhou para {owner}/{repo}: {e}")
+
+        # Fallback: scraping normal
+        headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+                "Accept-Language": "pt-BR,pt;q=0.9,en;q=0.8"}
         async with httpx.AsyncClient(timeout=20, follow_redirects=True) as client:
             resp = await client.get(url, headers=headers)
-            resp.raise_for_status()
         soup = BeautifulSoup(resp.text, "lxml")
         for tag in soup(["script", "style", "nav", "footer", "header"]):
             tag.decompose()
         title = soup.title.string.strip() if soup.title else url
         body  = soup.find("article") or soup.find("main") or soup.find("body")
         text  = body.get_text(separator="\n", strip=True) if body else ""
-        text  = re.sub(r"\n{3,}", "\n\n", text).strip()
-        return {"type": "article", "title": title[:200], "text": text[:MAX_CONTENT_CHARS], "url": url}
+        return {"type": "article", "title": title[:200],
+                "text": re.sub(r"\n{3,}", "\n\n", text).strip()[:MAX_CONTENT_CHARS], "url": url}
     
     async def analyze_content(self, content: dict, url: str) -> dict:
         prompt = f"""Analise o conteudo abaixo e extraia conhecimento estruturado.
