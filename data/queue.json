@@ -63,7 +63,60 @@
       "added_at": "2026-03-13T22:30:54.198008",
       "attempts": 0,
       "done_at": "2026-03-13T22:31:15.093405"
+    },
+    {
+      "url": "https://akitaonrails.com/2026/02/20/do-zero-a-pos-producao-em-1-semana-como-usar-ia-em-projetos-de-verdade-bastidores-do-the-m-akita-chronicles/",
+      "user_id": 7891701566,
+      "status": "failed",
+      "added_at": "2026-03-13T23:03:52.659563",
+      "attempts": 6,
+      "done_at": "2026-03-13T23:13:09.196879"
+    },
+    {
+      "url": "https://akitaonrails.com/2026/02/20/do-zero-a-pos-producao-em-1-semana-como-usar-ia-em-projetos-de-verdade-bastidores-do-the-m-akita-chronicles/",
+      "user_id": 7891701566,
+      "status": "failed",
+      "added_at": "2026-03-13T23:04:54.455790",
+      "attempts": 5,
+      "done_at": "2026-03-13T23:13:09.196887"
+    },
+    {
+      "url": "https://akitaonrails.com/2026/02/20/do-zero-a-pos-producao-em-1-semana-como-usar-ia-em-projetos-de-verdade-bastidores-do-the-m-akita-chronicles/",
+      "user_id": 7891701566,
+      "status": "failed",
+      "added_at": "2026-03-13T23:11:21.360010",
+      "attempts": 4,
+      "done_at": "2026-03-13T23:13:09.196889"
+    },
+    {
+      "url": "https://akitaonrails.com/2026/02/20/do-zero-a-pos-producao-em-1-semana-como-usar-ia-em-projetos-de-verdade-bastidores-do-the-m-akita-chronicles/",
+      "user_id": 7891701566,
+      "status": "failed",
+      "added_at": "2026-03-13T23:12:50.103295",
+      "attempts": 3,
+      "done_at": "2026-03-13T23:13:09.196890"
+    },
+    {
+      "url": "https://akitaonrails.com/2026/02/20/do-zero-a-pos-producao-em-1-semana-como-usar-ia-em-projetos-de-verdade-bastidores-do-the-m-akita-chronicles/",
+      "user_id": 7891701566,
+      "status": "failed",
+      "added_at": "2026-03-13T23:14:15.975128",
+      "attempts": 2
+    },
+    {
+      "url": "https://akitaonrails.com/2026/02/20/do-zero-a-pos-producao-em-1-semana-como-usar-ia-em-projetos-de-verdade-bastidores-do-the-m-akita-chronicles/",
+      "user_id": 7891701566,
+      "status": "failed",
+      "added_at": "2026-03-13T23:15:15.677865",
+      "attempts": 1
+    },
+    {
+      "url": "https://github.com/leonflicts42/ai-engineering-field-guide/blob/main/portfolio/README.md",
+      "user_id": 7891701566,
+      "status": "failed",
+      "added_at": "2026-03-13T23:15:42.569325",
+      "attempts": 1
     }
   ],
-  "updated_at": "2026-03-13T22:31:15.093412"
+  "updated_at": "2026-03-13T23:15:44.041847"
 }

@@ -16,7 +16,7 @@ import httpx
 from bs4 import BeautifulSoup
 from youtube_transcript_api import YouTubeTranscriptApi
 import google.generativeai as genai
-from google.api_core.exceptions import ResourceExhausted, ServiceUnavailable
+from google.api_core.exceptions import ResourceExhausted, ServiceUnavailable, InvalidArgument
 
 from dotenv import load_dotenv
 load_dotenv(Path(__file__).parent / ".env")
@@ -71,6 +71,10 @@ class PKMAgent:
                 logger.warning(f"Gemini {name} — indisponivel, tentando fallback...")
                 await asyncio.sleep(RETRY_DELAY)
                 continue
+            except InvalidArgument as e:
+                if "API_KEY" in str(e):
+                    raise ValueError("⚠️ A API Key do Gemini expirou ou é inválida. Atualize o .env.") from e
+                raise e
             except Exception as e:
                 logger.error(f"Gemini {name} erro: {e}")
                 raise
@@ -227,6 +231,9 @@ class PKMAgent:
         return None
 
     async def _extract_webpage(self, url: str) -> dict:
+        # GitHub — extrai via API pública em vez de scraping
+        if "github.com" in url and "/blob/" in url:
+            return await self._extract_github(url)
         headers = {
             "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/124.0 Safari/537.36",
             "Accept-Language": "pt-BR,pt;q=0.9,en;q=0.8",
@@ -243,6 +250,45 @@ class PKMAgent:
         text  = re.sub(r"\n{3,}", "\n\n", text).strip()
         return {"type": "article", "title": title[:200], "text": text[:MAX_CONTENT_CHARS], "url": url}
 
+    async def _extract_github(self, url: str) -> dict:
+        """Converte URL do GitHub blob para raw e extrai o conteúdo."""
+        # https://github.com/user/repo/blob/main/file.md
+        # → https://raw.githubusercontent.com/user/repo/main/file.md
+        raw_url = url.replace("github.com", "raw.githubusercontent.com").replace("/blob/", "/")
+        
+        try:
+            async with httpx.AsyncClient(timeout=20, follow_redirects=True) as client:
+                resp = await client.get(raw_url)
+                resp.raise_for_status()
+                text = resp.text
+                title = url.split("/")[-1].replace("-", " ").replace(".md", "").title()
+                return {
+                    "type": "article",
+                    "title": title[:200],
+                    "text": text[:MAX_CONTENT_CHARS],
+                    "url": url,
+                }
+        except Exception:
+            # Fallback: tenta scraping normal da página
+            pass
+
+        # Scraping normal para outros tipos de página do GitHub
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+            "Accept-Language": "pt-BR,pt;q=0.9,en;q=0.8",
+        }
+        async with httpx.AsyncClient(timeout=20, follow_redirects=True) as client:
+            resp = await client.get(url, headers=headers)
+            resp.raise_for_status()
+        soup = BeautifulSoup(resp.text, "lxml")
+        for tag in soup(["script", "style", "nav", "footer", "header"]):
+            tag.decompose()
+        title = soup.title.string.strip() if soup.title else url
+        body  = soup.find("article") or soup.find("main") or soup.find("body")
+        text  = body.get_text(separator="\n", strip=True) if body else ""
+        text  = re.sub(r"\n{3,}", "\n\n", text).strip()
+        return {"type": "article", "title": title[:200], "text": text[:MAX_CONTENT_CHARS], "url": url}
+    
     async def analyze_content(self, content: dict, url: str) -> dict:
         prompt = f"""Analise o conteudo abaixo e extraia conhecimento estruturado.
                 URL: {url}
