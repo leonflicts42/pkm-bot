@@ -165,6 +165,7 @@ async def handle_message(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
 
 
 async def _process_link(update, status_msg, url, goals, user_id):
+    chat_id = update.effective_chat.id
     try:
         await status_msg.edit_text(f"📖 Lendo conteúdo...\n`{url[:55]}`", parse_mode="Markdown")
         content = await agent.fetch_and_extract(url)
@@ -181,20 +182,51 @@ async def _process_link(update, status_msg, url, goals, user_id):
         sessions.record_processed(user_id, relevance["is_relevant"])
         queue.mark_done(url)
         await status_msg.delete()
-        await _send_result(update, analysis, relevance, note_path)
+
+        # Envia resultado direto pelo chat_id em vez de update.message
+        score = relevance["score"]
+        emoji = "🟢" if score >= 7 else "🟡" if score >= 4 else "🔴"
+        verdict = "✅ Vale seu tempo" if relevance["is_relevant"] else "⏭ Pode pular"
+        tags_str = " ".join(f"`{t}`" for t in analysis.get("tags", [])[:5])
+
+        text = (
+            f"{emoji} *{analysis['title'][:70]}*\n\n"
+            f"📌 {analysis['summary'][:200]}\n\n"
+            f"*Relevância:* {score}/10 — {verdict}\n"
+            f"*Motivo:* {relevance['reason'][:180]}\n\n"
+            f"🏷 {tags_str}\n"
+            f"📂 `{note_path}`"
+        )
+
+        # Limita o note_path para caber no callback do Telegram (max 64 bytes)
+        safe_path = note_path[-50:] if len(note_path) > 50 else note_path
+
+        keyboard = [[
+            InlineKeyboardButton("📖 Ver nota", callback_data=f"view|{safe_path}"),
+            InlineKeyboardButton("🗑 Deletar",  callback_data=f"delete|{safe_path}"),
+        ]]
+
+        await status_msg.get_bot().send_message(
+            chat_id=chat_id,
+            text=text,
+            parse_mode="Markdown",
+            reply_markup=InlineKeyboardMarkup(keyboard),
+            disable_web_page_preview=True
+        )
 
     except RuntimeError as e:
-        # Cota esgotada
         queue.mark_failed(url)
-        await status_msg.edit_text(
-            f"🔋 *Cota diária esgotada*\n\n{str(e)}\n\nUse /quota para ver o status.",
+        await status_msg.get_bot().send_message(
+            chat_id=chat_id,
+            text=f"🔋 *Cota diária esgotada*\n\n{str(e)}",
             parse_mode="Markdown"
         )
     except Exception as e:
         logger.error(f"Erro ao processar {url}: {e}", exc_info=True)
         queue.mark_failed(url)
-        await status_msg.edit_text(
-            f"❌ Erro ao processar o link.\n`{str(e)[:120]}`",
+        await status_msg.get_bot().send_message(
+            chat_id=chat_id,
+            text=f"❌ Erro ao processar o link.\n`{str(e)[:120]}`",
             parse_mode="Markdown"
         )
 
@@ -232,7 +264,8 @@ async def handle_callback(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     await q.answer()
     if q.data.startswith("view|"):
         path = q.data.split("|", 1)[1]
-        note = agent.read_note(path)
+        # Busca a nota que termina com esse caminho
+        note = agent.read_note(path) or agent.find_note_by_suffix(path)
         if note:
             await q.message.reply_text(f"```\n{note[:3500]}\n```", parse_mode="Markdown")
         else:
@@ -240,7 +273,7 @@ async def handle_callback(update: Update, ctx: ContextTypes.DEFAULT_TYPE):
     elif q.data.startswith("delete|"):
         path = q.data.split("|", 1)[1]
         agent.delete_note(path)
-        await q.message.reply_text(f"🗑 Nota deletada: `{path}`", parse_mode="Markdown")
+        await q.message.reply_text(f"🗑 Nota deletada.", parse_mode="Markdown")
 
 
 def _extract_urls(text: str) -> list:

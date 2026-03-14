@@ -137,22 +137,73 @@
       "user_id": 7891701566,
       "status": "failed",
       "added_at": "2026-03-13T23:28:20.791756",
-      "attempts": 3
+      "attempts": 7,
+      "done_at": "2026-03-13T23:45:49.373718"
     },
     {
       "url": "https://github.com/DataTalksClub/machine-learning-zoomcamp",
       "user_id": 7891701566,
       "status": "failed",
       "added_at": "2026-03-13T23:29:14.849924",
-      "attempts": 2
+      "attempts": 6,
+      "done_at": "2026-03-13T23:45:49.373729"
     },
     {
       "url": "https://github.com/DataTalksClub/machine-learning-zoomcamp",
       "user_id": 7891701566,
       "status": "failed",
       "added_at": "2026-03-13T23:33:43.699929",
-      "attempts": 1
+      "attempts": 5,
+      "done_at": "2026-03-13T23:45:49.373739"
+    },
+    {
+      "url": "https://github.com/DataTalksClub/machine-learning-zoomcamp",
+      "user_id": 7891701566,
+      "status": "failed",
+      "added_at": "2026-03-13T23:35:02.618686",
+      "attempts": 4,
+      "done_at": "2026-03-13T23:45:49.373741"
+    },
+    {
+      "url": "https://github.com/DataTalksClub/machine-learning-zoomcamp",
+      "user_id": 7891701566,
+      "status": "failed",
+      "added_at": "2026-03-13T23:37:15.236115",
+      "attempts": 3,
+      "done_at": "2026-03-13T23:45:49.373743"
+    },
+    {
+      "url": "https://github.com/DataTalksClub/machine-learning-zoomcamp",
+      "user_id": 7891701566,
+      "status": "failed",
+      "added_at": "2026-03-13T23:41:17.117433",
+      "attempts": 2,
+      "done_at": "2026-03-13T23:45:49.373744"
+    },
+    {
+      "url": "https://github.com/DataTalksClub/machine-learning-zoomcamp",
+      "user_id": 7891701566,
+      "status": "failed",
+      "added_at": "2026-03-13T23:45:28.770534",
+      "attempts": 1,
+      "done_at": "2026-03-13T23:45:49.373746"
+    },
+    {
+      "url": "https://github.com/DataTalksClub/mlops-zoomcamp",
+      "user_id": 7891701566,
+      "status": "done",
+      "added_at": "2026-03-13T23:48:08.237932",
+      "attempts": 1,
+      "done_at": "2026-03-13T23:50:16.381163"
+    },
+    {
+      "url": "https://github.com/DataTalksClub/mlops-zoomcamp",
+      "user_id": 7891701566,
+      "status": "done",
+      "added_at": "2026-03-13T23:49:57.325552",
+      "attempts": 0,
+      "done_at": "2026-03-13T23:50:16.381175"
     }
   ],
-  "updated_at": "2026-03-13T23:33:46.646376"
+  "updated_at": "2026-03-13T23:50:16.381179"
 }
