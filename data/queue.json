@@ -122,9 +122,37 @@
       "user_id": 7891701566,
       "status": "failed",
       "added_at": "2026-03-13T23:21:52.959067",
-      "attempts": 1,
+      "attempts": 2,
       "done_at": "2026-03-13T23:22:14.548740"
+    },
+    {
+      "url": "https://github.com/leonflicts42/machine-learning-zoomcamp",
+      "user_id": 7891701566,
+      "status": "failed",
+      "added_at": "2026-03-13T23:25:14.667434",
+      "attempts": 1
+    },
+    {
+      "url": "https://github.com/DataTalksClub/machine-learning-zoomcamp",
+      "user_id": 7891701566,
+      "status": "failed",
+      "added_at": "2026-03-13T23:28:20.791756",
+      "attempts": 3
+    },
+    {
+      "url": "https://github.com/DataTalksClub/machine-learning-zoomcamp",
+      "user_id": 7891701566,
+      "status": "failed",
+      "added_at": "2026-03-13T23:29:14.849924",
+      "attempts": 2
+    },
+    {
+      "url": "https://github.com/DataTalksClub/machine-learning-zoomcamp",
+      "user_id": 7891701566,
+      "status": "failed",
+      "added_at": "2026-03-13T23:33:43.699929",
+      "attempts": 1
     }
   ],
-  "updated_at": "2026-03-13T23:22:15.287335"
+  "updated_at": "2026-03-13T23:33:46.646376"
 }

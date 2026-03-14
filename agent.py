@@ -34,7 +34,7 @@ RETRY_DELAY       = 10
 genai.configure(api_key=GEMINI_API_KEY)
 
 MODEL_FLASH      = "gemini-2.5-flash"
-MODEL_FLASH_LITE = "gemini-2.5-flash-lite-preview-06-17"
+MODEL_FLASH_LITE = "gemini-2.0-flash-lite"
 
 
 class PKMAgent:
@@ -255,16 +255,27 @@ class PKMAgent:
 
         # Caso 1: arquivo específico (/blob/) → converte para raw
         if "/blob/" in url:
-            raw_url = url.replace("github.com", "raw.githubusercontent.com").replace("/blob/", "/")
+            raw_url = (url
+                .replace("github.com", "raw.githubusercontent.com")
+                .replace("/blob/", "/"))
             try:
                 async with httpx.AsyncClient(timeout=20, follow_redirects=True) as client:
                     resp = await client.get(raw_url)
+                    if resp.status_code in (401, 403, 404):
+                        raise ValueError("repositorio_privado")
                     resp.raise_for_status()
                     title = url.split("/")[-1].replace("-", " ").replace(".md", "").title()
                     return {"type": "article", "title": title[:200],
                             "text": resp.text[:MAX_CONTENT_CHARS], "url": url}
+            except ValueError as e:
+                if "repositorio_privado" in str(e):
+                    raise RuntimeError(
+                        "🔒 Este repositório é privado. "
+                        "O bot só consegue ler repositórios públicos do GitHub."
+                    )
+                raise
             except Exception as e:
-                logger.warning(f"GitHub raw falhou: {e}")
+                logger.warning(f"GitHub raw falhou ({e}), tentando scraping...")
 
         # Caso 2: página de repositório → usa API pública do GitHub (sem autenticação)
         # Extrai user/repo da URL
