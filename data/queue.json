@@ -1,0 +1,69 @@
+{
+  "items": [
+    {
+      "url": "https://go.cloudskillsboost.google/arcade",
+      "user_id": 7891701566,
+      "status": "done",
+      "added_at": "2026-03-13T21:55:26.691908",
+      "attempts": 2,
+      "done_at": "2026-03-13T22:03:40.654887"
+    },
+    {
+      "url": "https://go.cloudskillsboost.google/arcade",
+      "user_id": 7891701566,
+      "status": "done",
+      "added_at": "2026-03-13T21:59:43.826061",
+      "attempts": 1,
+      "done_at": "2026-03-13T22:03:40.654895"
+    },
+    {
+      "url": "https://go.cloudskillsboost.google/arcade",
+      "user_id": 7891701566,
+      "status": "done",
+      "added_at": "2026-03-13T22:03:22.095651",
+      "attempts": 0,
+      "done_at": "2026-03-13T22:03:40.654897"
+    },
+    {
+      "url": "https://docs.google.com/document/u/0/d/1bVoL2ys12VaFcZzi3XxF4-JfqR-DY8wDkfT38_MfoSo/mobilebasic?pli=1&fbclid=PAVERTVgQf4NFleHRuA2FlbQIxMABzcnRjBmFwcF9pZA81NjcwNjczNDMzNTI0MjcAAaebgOcJapEnWUKRHlAyqusXlD8vKrl26h6fJM5JLGWc74rUW11NULVdza2TMQ_aem_0141R-c8ifn0WJ0dnvmwNw",
+      "user_id": 7891701566,
+      "status": "done",
+      "added_at": "2026-03-13T22:15:29.112717",
+      "attempts": 0,
+      "done_at": "2026-03-13T22:15:48.310030"
+    },
+    {
+      "url": "https://drive.google.com/file/d/1lyaKAJIG8YecsA0LIDzHzC1oy7AZfLBR/view?usp=sharing",
+      "user_id": 7891701566,
+      "status": "done",
+      "added_at": "2026-03-13T22:17:45.148723",
+      "attempts": 0,
+      "done_at": "2026-03-13T22:18:03.663123"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=M-GdmrDZFeE",
+      "user_id": 7891701566,
+      "status": "done",
+      "added_at": "2026-03-13T22:19:35.712680",
+      "attempts": 1,
+      "done_at": "2026-03-13T22:31:15.093396"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=M-GdmrDZFeE",
+      "user_id": 7891701566,
+      "status": "done",
+      "added_at": "2026-03-13T22:28:27.135265",
+      "attempts": 1,
+      "done_at": "2026-03-13T22:31:15.093404"
+    },
+    {
+      "url": "https://www.youtube.com/watch?v=M-GdmrDZFeE",
+      "user_id": 7891701566,
+      "status": "done",
+      "added_at": "2026-03-13T22:30:54.198008",
+      "attempts": 0,
+      "done_at": "2026-03-13T22:31:15.093405"
+    }
+  ],
+  "updated_at": "2026-03-13T22:31:15.093412"
+}
